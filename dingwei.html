@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>地理定位</title>
+    <style type="text/css">
+        #mapView{
+                width: 500px;
+    border: 1px solid;
+    height: 500px;
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6M2CwoigqyL3LC6VwepO4n73vRdD4vzr"></script>
+</head>
+<body>
+    <div id='mapView'>
+
+    </div>
+
+    <script type="text/javascript">
+        function success(position){
+            var j =position.coords.latitude;
+            var w =position.coords.longitude;
+        //GPS坐标
+    var x =w;
+    var y =j;
+    var ggPoint = new BMap.Point(x,y);
+
+    //地图初始化
+    var bm = new BMap.Map("mapView");
+    bm.centerAndZoom(ggPoint, 15);
+    bm.addControl(new BMap.NavigationControl());
+        bm.enableScrollWheelZoom();   //启用滚轮放大缩小，默认禁用
+    bm.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
+    //坐标转换完之后的回调函数
+    translateCallback = function (data){
+      if(data.status === 0) {
+        var marker = new BMap.Marker(data.points[0]);
+        bm.addOverlay(marker);
+        var label = new BMap.Label("当前位置",{offset:new BMap.Size(20,-10)});
+        marker.setLabel(label); //添加百度label
+        bm.setCenter(data.points[0]);
+      }
+    }
+     var convertor = new BMap.Convertor();
+        var pointArr = [];
+        pointArr.push(ggPoint);
+        convertor.translate(pointArr, 1, 5, translateCallback)
+
+        }
+    if (navigator.geolocation)
+    {
+    navigator.geolocation.getCurrentPosition(success);
+    }
+    </script>
+</body>
+</html>
